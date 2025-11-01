@@ -31,8 +31,8 @@ public class Main {
             switch (choice) {
                 case "1" -> openAccount(sc, bankService);
                 case "2" -> deposit(sc, bankService);
-                case "3" -> System.out.println("3");
-                case "4" -> System.out.println("4");
+                case "3" -> withdraw(sc, bankService);
+                case "4" -> transfer(sc, bankService);
                 case "5" -> System.out.println("5");
                 case "6" -> listAccount(bankService);
                 case "7" -> System.out.println("7");
@@ -78,6 +78,42 @@ public class Main {
         bankService.deposit(accountNumber, amount, "DEPOSIT");
 
         System.out.println("DEPOSIT SUCCESSFULLY, AMOUNT: " + amount + "🎉");
+    }
+
+    private static void withdraw(Scanner sc, BankService bankService) {
+        System.out.print("Account Number: ");
+        String accountNumber = sc.nextLine().trim();
+
+        System.out.print("Amount: ");
+        Double amount = sc.nextDouble();
+
+        bankService.withdraw(accountNumber, amount, "WITHDRAW");
+
+        System.out.println("WITHDRAW SUCCESSFULLY, AMOUNT: " + amount + "🎉");
+    }
+
+
+    private static void transfer(Scanner sc, BankService bankService) {
+        System.out.print("From Account: ");
+        String fromAccountNumber = sc.nextLine().trim();
+
+        System.out.print("To Account: ");
+        String toAccountNumber = sc.nextLine().trim();
+
+        System.out.print("Note: ");
+        String note = sc.nextLine().trim();
+
+        System.out.print("Amount: ");
+        double amount = sc.nextDouble();
+
+        bankService.transfer(fromAccountNumber, toAccountNumber, amount, note);
+
+        System.out.println(
+                "TRANSFER SUCCESSFULLY FROM " +
+                        fromAccountNumber + " to " +
+                        toAccountNumber + "amount: " +
+                        amount
+        );
     }
 
     private static void listAccount(BankService bankService) {
