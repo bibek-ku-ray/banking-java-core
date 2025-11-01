@@ -1,6 +1,7 @@
 package service;
 
 import domain.Account;
+import domain.Transaction;
 
 import java.util.List;
 
@@ -15,4 +16,8 @@ public interface BankService {
     void withdraw(String accountNumber, Double amount, String withdraw);
 
     void transfer(String fromAccountNumber, String toAccountNumber, double amount, String note);
+
+    List<Transaction> statements(String accountNumber);
+
+    List<Account> searchAccountByName(String name);
 }

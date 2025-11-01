@@ -33,9 +33,9 @@ public class Main {
                 case "2" -> deposit(sc, bankService);
                 case "3" -> withdraw(sc, bankService);
                 case "4" -> transfer(sc, bankService);
-                case "5" -> System.out.println("5");
+                case "5" -> statement(sc, bankService);
                 case "6" -> listAccount(bankService);
-                case "7" -> System.out.println("7");
+                case "7" -> searchAccountByName(sc, bankService);
                 case "0" -> {
                     running = false;
                     System.out.println("Program End 🎬");
@@ -92,7 +92,6 @@ public class Main {
         System.out.println("WITHDRAW SUCCESSFULLY, AMOUNT: " + amount + "🎉");
     }
 
-
     private static void transfer(Scanner sc, BankService bankService) {
         System.out.print("From Account: ");
         String fromAccountNumber = sc.nextLine().trim();
@@ -114,6 +113,26 @@ public class Main {
                         toAccountNumber + "amount: " +
                         amount
         );
+    }
+
+    private static void statement(Scanner sc, BankService bankService) {
+        System.out.print("Account Number: ");
+        String accountNumber = sc.nextLine().trim();
+
+        bankService.statements(accountNumber).forEach(transaction -> {
+            System.out.println(transaction.getTimestamp() + " | " +
+                    transaction.getAccountNumber() + " | " +
+                    transaction.getAmount() + " | " +
+                    transaction.getId() + " | " +
+                    transaction.getNote());
+        });
+    }
+
+    private static void searchAccountByName(Scanner sc, BankService bankService) {
+        System.out.println("Customer Name: ");
+        String name = sc.nextLine().trim();
+
+        bankService.searchAccountByName(name);
     }
 
     private static void listAccount(BankService bankService) {
