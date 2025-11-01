@@ -10,6 +10,7 @@ import repository.AccountRepository;
 import repository.CustomerRepository;
 import repository.TransactionRepository;
 import service.BankService;
+import util.Validation;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -23,8 +24,33 @@ public class BankServiceImpl implements BankService {
     TransactionRepository transactionRepository = new TransactionRepository();
     CustomerRepository customerRepository = new CustomerRepository();
 
+    private final Validation<String> validateName = name -> {
+        if (name == null || name.isBlank()) throw new ValidationException("Name is required.");
+    };
+
+    private final Validation<String> validateEmail = email -> {
+        if (email == null || email.isBlank() || !email.contains("@"))
+            throw new ValidationException("Invalid email");
+    };
+
+    private final Validation<String> validateAccountType = type -> {
+        if (type == null || type.isBlank() ||
+                !(type.equalsIgnoreCase("SAVING") || type.equalsIgnoreCase("CURRENT")))
+            throw new ValidationException("Invalid account type");
+    };
+
+    private final Validation<Double> validationAmount = amount -> {
+        if (amount == null || amount < 0)
+            throw new ValidationException("Please enter valid amount");
+    };
+
     @Override
     public String openAccount(String name, String email, String accountType) {
+
+        validateName.validate(name);
+        validateEmail.validate(email);
+        validateAccountType.validate(accountType);
+
         String customerId = UUID.randomUUID().toString();
         String accountNumber = getAccountNumber();
 
@@ -42,6 +68,9 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public void deposit(String accountNumber, Double amount, String note) {
+
+        validationAmount.validate(amount);
+
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException(
                         "Account not found! Account number: " + accountNumber)
@@ -63,6 +92,9 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public void withdraw(String accountNumber, Double amount, String note) {
+
+        validationAmount.validate(amount);
+
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new AccountNotFoundException(
                         "Account not found! Account number: " + accountNumber)
@@ -88,6 +120,9 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public void transfer(String fromAccountNumber, String toAccountNumber, double amount, String note) {
+
+        validationAmount.validate(amount);
+
         if (fromAccountNumber.equals(toAccountNumber)) {
             throw new ValidationException("Invalid credentials");
         }
@@ -130,6 +165,9 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public List<Account> searchAccountByName(String name) {
+
+        validateName.validate(name);
+
         String q = (name == null) ? "" : name.toLowerCase();
 
         return customerRepository.findAll().stream()
